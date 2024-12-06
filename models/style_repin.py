@@ -12,7 +12,7 @@ def calculate_mu_sig(x, eps=1e-6):
     sig = torch.sqrt(var + eps)
     return mu, sig
 
-class StyleRepresentation(nn.Module):  # Style Projection module
+class StyleRepresentation(nn.Module):
     def __init__(
             self,
             num_prototype=2,
@@ -47,8 +47,8 @@ class StyleRepresentation(nn.Module):  # Style Projection module
         batch = fea.size(0)
         cur_mu, cur_sig = calculate_mu_sig(fea)
 
-        proto_mu = self.style_mu
-        proto_sig = self.style_sig
+        proto_mu = momentum_update(self.style_mu, cur_mu, self.gamma)
+        proto_sig = momentum_update(self.style_sig, cur_sig, self.gamma)
         if self.dis_mode == 'was':
             distance = self.was_distance(cur_mu, cur_sig, proto_mu, proto_sig, batch)
         else:  # abs kl others
